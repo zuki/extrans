@@ -11,19 +11,13 @@ defmodule Extrans do
   
   """
   def xgettext(config, app, opt) do
-#    IO.inspect [config: config]
     {opt, _args, _rest}  = OptionParser.parse(opt)
     c = Keyword.get(config, :docs)
     docs = c.()
     files = docs[:extras]
-    source_root = docs[:source_root]
-#    IO.inspect [docs: docs]
-#    IO.inspect [opt: opt]
-#    IO.inspect [app: app]
+    #source_root = docs[:source_root]
     app = Keyword.get(docs, :app, app)
-#    IO.inspect [app: app]
     source_docroot = opt[String.to_atom(app)]
-#    IO.inspect [source_docroot: source_docroot]
     Enum.map(files, fn(file) ->
                       outpath = Exgettext.Util.pot_path(app, file)
                       file = Path.join(source_docroot, file)
@@ -58,9 +52,10 @@ defmodule Extrans do
                end
     content = Enum.reduce(s, "", fn(x, acc) ->
                                    x = Regex.replace(~r/$/, x, eol)
-                                   x = Regex.replace(~r/\"/, x, "\\\"")
-                                   x = Regex.replace(~r/\n/, x, "\\\\n")
-                                   x = Regex.replace(~r/\\/, x, "\\\\")
+                                   x = escape(x)
+                                   #x = Regex.replace(~r/\"/, x, "\\\"")
+                                   #x = Regex.replace(~r/\n/, x, "\\\\n")
+                                   #x = Regex.replace(~r/\\/, x, "\\\\")
                                    #  delim_escaped = Regex.replace(~r/(\n)/, delim, "\\n")
                                    delim_escaped = ""
                                    acc <>  "\"#{x}#{delim_escaped}\"#{delim}"
@@ -92,17 +87,16 @@ defmodule Extrans do
       :ets.insert(ets, {cont, comment})
       IO.write(fd, comment)
       IO.write(fd, "msgid ") 
-      cond do
+      x = cond do
         Regex.match?(~r/\n/, cont) ->
           IO.write(fd, "\"\"\n")
-          x =  Regex.replace(~r/\\/, cont, "\\\\\\")
-          x =  Regex.replace(~r/\"/, x, "\\\"")
-          x = Regex.replace(~r/\n/, x, "\\n\"\n\"")
-          IO.write(fd, "\"#{x}\"")
-          true ->
-          x = escape(cont)
-          IO.write(fd, "\"#{x}\"")
+          x = Regex.replace(~r/\\/, cont, "\\\\\\")
+          x = Regex.replace(~r/\"/, x, "\\\"")
+          Regex.replace(~r/\n/, x, "\\n\"\n\"")
+        true ->
+          escape(cont)
       end
+      IO.write(fd, "\"#{x}\"")
       IO.write(fd, "\nmsgstr \"\"\n\n")
     end
     cont
@@ -110,32 +104,21 @@ defmodule Extrans do
   def md(content, meta) do
     String.split(content, "\n\n")
     |> Enum.map(fn(x) -> 
-                  s = Exgettext.Runtime.gettext(meta.app, x)
-#                  IO.inspect [m: meta.app]
-#                  IO.inspect [x1: x]
-#                  IO.inspect [x2: s]
-                  s
+                  Exgettext.Runtime.gettext(meta.app, x)
                 end)
     |> Enum.join("\n\n")
   end
   def make_pot(content, meta) do
-#    opt = %Earmark.Options{}
-#    opt = %{opt| mapper: &__MODULE__.mapper/2}
     outfile = meta.outpath
     outpath = outfile
-#    outpath = Path.join([outfile, Path.basename(meta.file) <> ".pot"])
-#    IO.inspect [outpath: outpath]
-#    IO.inspect [meta: meta]
     :ok = File.mkdir_p(Path.dirname(outpath))
     {:ok, fd} = File.open(outpath, [:write])
     cont = String.split(content, "\n\n")
-#    IO.inspect cont
-    {r, a} = Enum.map_reduce(cont, 0,
+    {r, _a} = Enum.map_reduce(cont, 0,
                     fn(x, a) ->
                       {{a + 1, x},
                        a + Enum.count(String.split(x, "\n")) + 1}
                     end)
-#    IO.inspect {r, a}
     ets = :ets.new(:msgs, [:named_table])
     Enum.map(r, fn({line, c}) ->
                   comment = line_comment(meta, line)
