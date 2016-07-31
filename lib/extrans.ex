@@ -101,10 +101,13 @@ defmodule Extrans do
     end
     cont
   end
+  def translate(content, meta) do
+    md(content, meta)
+  end
   def md(content, meta) do
     String.split(content, "\n\n")
     |> Enum.map(fn(x) -> 
-                  Exgettext.Runtime.gettext(meta.app, x)
+                  Exgettext.Runtime.gettext(meta[:app], x)
                 end)
     |> Enum.join("\n\n")
   end
