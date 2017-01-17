@@ -1,14 +1,14 @@
 defmodule Extrans do
   use Exgettext
   @doc """
-  create .pot file 
+  create .pot file
 
   extra documents in mix.exs project `config` is splited to chunk by blank line, and
   creating the .pot file by chunk.
 
   expected using with exgettext.
 
-  
+
   """
   def xgettext(config, app, opt) do
     {opt, _args, _rest}  = OptionParser.parse(opt)
@@ -26,7 +26,7 @@ defmodule Extrans do
              end)
   end
   @doc """
-  
+
   """
   def conv(file, app, outpath) do
     :ok = File.mkdir_p(outpath)
@@ -86,7 +86,7 @@ defmodule Extrans do
     if not(:ets.member(ets, cont)) && not(is_code(cont)) do
       :ets.insert(ets, {cont, comment})
       IO.write(fd, comment)
-      IO.write(fd, "msgid ") 
+      IO.write(fd, "msgid ")
       x = cond do
         Regex.match?(~r/\n/, cont) ->
           IO.write(fd, "\"\"\n")
@@ -106,7 +106,7 @@ defmodule Extrans do
   end
   def md(content, meta) do
     String.split(content, "\n\n")
-    |> Enum.map(fn(x) -> 
+    |> Enum.map(fn(x) ->
                   Exgettext.Runtime.gettext(meta[:app], x)
                 end)
     |> Enum.join("\n\n")
@@ -115,7 +115,7 @@ defmodule Extrans do
     outfile = meta.outpath
     outpath = outfile
     :ok = File.mkdir_p(Path.dirname(outpath))
-    {:ok, fd} = File.open(outpath, [:write])
+    {:ok, fd} = File.open(outpath, [:write, :utf8])
     cont = String.split(content, "\n\n")
     {r, _a} = Enum.map_reduce(cont, 0,
                     fn(x, a) ->
