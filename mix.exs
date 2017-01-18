@@ -4,7 +4,6 @@ defmodule Extrans.Mixfile do
   def project do
     [app: :extrans,
      version: "0.0.2",
-# elixir: "~> 1.2-rc",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps()]
@@ -29,9 +28,9 @@ defmodule Extrans.Mixfile do
   defp deps do
     [
 #     {:exgettext, path: "../exgettext"}
-     {:exgettext, github: "zuki/exgettext"},
 #     {:earmark, "~> 0.1.17 or ~> 0.2", optional: true},
-     {:ex_doc, github: "elixir-lang/ex_doc", override: true}
+#     {:ex_doc, github: "elixir-lang/ex_doc", override: true},
+      {:exgettext, git: "git@bitbucket.org:zuki_ebetsu/exgettext.git"}
     ]
   end
 end
