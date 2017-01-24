@@ -27,10 +27,10 @@ defmodule Extrans.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-#     {:exgettext, path: "../exgettext"}
 #     {:earmark, "~> 0.1.17 or ~> 0.2", optional: true},
 #     {:ex_doc, github: "elixir-lang/ex_doc", override: true},
       {:exgettext, git: "git@bitbucket.org:zuki_ebetsu/exgettext.git"}
+#      {:exgettext, path: "../exgettext"}
     ]
   end
 end
