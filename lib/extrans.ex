@@ -22,7 +22,6 @@ defmodule Extrans do
     if source_docroot do
       Enum.map(files, fn(file) ->
                         outpath = Exgettext.Util.pot_path(app, file)
-                        IO.inspect [source_docroot: source_docroot, file: file]
                         file = Path.join(source_docroot, file)
                         File.read!(file)
                         |> make_pot(%{:file => file, :outpath => outpath})
