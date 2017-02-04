@@ -29,7 +29,7 @@ defmodule Extrans.Mixfile do
     [
 #     {:earmark, "~> 0.1.17 or ~> 0.2", optional: true},
 #     {:ex_doc, github: "elixir-lang/ex_doc", override: true},
-      {:exgettext, git: "git@bitbucket.org:zuki_ebetsu/exgettext.git"}
+      {:exgettext, github: "zuki/exgettext", tag: "v0.1.2"}
 #      {:exgettext, path: "../exgettext"}
     ]
   end
